@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="7a9707a3-63cc-4e50-a6fb-5dca0fdbb513" name="meta-sr" url="http:///">
+        <fileTransfer rootFolder="/home/lzk/workspace/Meta-SR-Pytorch" accessType="SFTP" host="121.4.187.220" port="3090" sshConfigId="edcf14b6-aaad-4a6f-847c-a37e4d0b1b60" sshConfig="lzk@121.4.187.220:3090 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="5c068df9-1dee-40f5-8348-86be7da4adc7" name="222_meta-sr" url="http:///">
+        <fileTransfer rootFolder="/home/lzk/workspace/Meta-SR-Pytorch" accessType="SFTP" host="222.25.173.28" port="3090" sshConfigId="93c7506d-f2aa-413d-88a1-434fcb33890a" sshConfig="lzk@222.25.173.28:3090 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
