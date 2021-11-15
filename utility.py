@@ -5,6 +5,7 @@ import datetime
 from functools import reduce
 
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -14,6 +15,7 @@ import cv2
 import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lrs
+
 
 class timer():
     def __init__(self):
@@ -37,6 +39,7 @@ class timer():
 
     def reset(self):
         self.acc = 0
+
 
 class checkpoint():
     def __init__(self, args):
@@ -126,13 +129,15 @@ class checkpoint():
             ndarr = normalized.byte().permute(1, 2, 0).cpu().numpy()
             misc.imsave('{}{}.png'.format(filename, p), ndarr)
 
+
 def quantize(img, rgb_range):
     pixel_range = 255 / rgb_range
     return img.mul(pixel_range).clamp(0, 255).round().div(pixel_range)
 
+
 def calc_psnr(sr, hr, scale, rgb_range, benchmark=False):
-    #print(sr.size())
-    #print(hr.size())
+    # print(sr.size())
+    # print(hr.size())
     diff = (sr - hr).data.div(rgb_range)
     if benchmark:
         shave = scale
@@ -145,7 +150,7 @@ def calc_psnr(sr, hr, scale, rgb_range, benchmark=False):
             diff = diff.sum(dim=1, keepdim=True)
     else:
         shave = scale + 6
-    #shave = int(shave)
+    # shave = int(shave)
     import math
     shave = math.ceil(shave)
     valid = diff[:, :, shave:-shave, shave:-shave]
@@ -153,7 +158,7 @@ def calc_psnr(sr, hr, scale, rgb_range, benchmark=False):
 
     return -10 * math.log10(mse)
 
-    
+
 def calc_ssim(img1, img2, scale=2, benchmark=False):
     '''calculate SSIM
     the same outputs as MATLAB's
@@ -162,20 +167,20 @@ def calc_ssim(img1, img2, scale=2, benchmark=False):
     if benchmark:
         border = math.ceil(scale)
     else:
-        border = math.ceil(scale)+6
-        
-    img1 = img1.data.squeeze().float().clamp(0,255).round().cpu().numpy()
-    img1 = np.transpose(img1,(1,2,0))
+        border = math.ceil(scale) + 6
+
+    img1 = img1.data.squeeze().float().clamp(0, 255).round().cpu().numpy()
+    img1 = np.transpose(img1, (1, 2, 0))
     img2 = img2.data.squeeze().cpu().numpy()
-    img2 = np.transpose(img2,(1,2,0))
-    
-    img1_y = np.dot(img1,[65.738,129.057,25.064])/255.0+16.0
-    img2_y = np.dot(img2,[65.738,129.057,25.064])/255.0+16.0
+    img2 = np.transpose(img2, (1, 2, 0))
+
+    img1_y = np.dot(img1, [65.738, 129.057, 25.064]) / 255.0 + 16.0
+    img2_y = np.dot(img2, [65.738, 129.057, 25.064]) / 255.0 + 16.0
     if not img1.shape == img2.shape:
         raise ValueError('Input images must have the same dimensions.')
     h, w = img1.shape[:2]
-    img1_y = img1_y[border:h-border, border:w-border]
-    img2_y = img2_y[border:h-border, border:w-border]
+    img1_y = img1_y[border:h - border, border:w - border]
+    img2_y = img2_y[border:h - border, border:w - border]
 
     if img1_y.ndim == 2:
         return ssim(img1_y, img2_y)
@@ -192,8 +197,8 @@ def calc_ssim(img1, img2, scale=2, benchmark=False):
 
 
 def ssim(img1, img2):
-    C1 = (0.01 * 255)**2
-    C2 = (0.03 * 255)**2
+    C1 = (0.01 * 255) ** 2
+    C2 = (0.03 * 255) ** 2
 
     img1 = img1.astype(np.float64)
     img2 = img2.astype(np.float64)
@@ -202,18 +207,18 @@ def ssim(img1, img2):
 
     mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5]  # valid
     mu2 = cv2.filter2D(img2, -1, window)[5:-5, 5:-5]
-    mu1_sq = mu1**2
-    mu2_sq = mu2**2
+    mu1_sq = mu1 ** 2
+    mu2_sq = mu2 ** 2
     mu1_mu2 = mu1 * mu2
-    sigma1_sq = cv2.filter2D(img1**2, -1, window)[5:-5, 5:-5] - mu1_sq
-    sigma2_sq = cv2.filter2D(img2**2, -1, window)[5:-5, 5:-5] - mu2_sq
+    sigma1_sq = cv2.filter2D(img1 ** 2, -1, window)[5:-5, 5:-5] - mu1_sq
+    sigma2_sq = cv2.filter2D(img2 ** 2, -1, window)[5:-5, 5:-5] - mu2_sq
     sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
 
     ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) *
                                                             (sigma1_sq + sigma2_sq + C2))
     return ssim_map.mean()
-    
-    
+
+
 def make_optimizer(args, my_model):
     trainable = filter(lambda x: x.requires_grad, my_model.parameters())
 
@@ -235,13 +240,14 @@ def make_optimizer(args, my_model):
 
     return optimizer_function(trainable, **kwargs)
 
+
 def make_scheduler(args, my_optimizer):
     if args.decay_type == 'step':
         scheduler = lrs.StepLR(
             my_optimizer,
             step_size=args.lr_decay,
             gamma=args.gamma
-            #last_epoch = args.start_epoch
+            # last_epoch = args.start_epoch
         )
     elif args.decay_type.find('step') >= 0:
         milestones = args.decay_type.split('_')
@@ -251,10 +257,9 @@ def make_scheduler(args, my_optimizer):
             my_optimizer,
             milestones=milestones,
             gamma=args.gamma
-            #last_epoch = args.start_epoch
+            # last_epoch = args.start_epoch
         )
 
-    scheduler.step(args.start_epoch-1)
+    scheduler.step(args.start_epoch - 1)
 
     return scheduler
-
