@@ -9,6 +9,7 @@ import imageio
 import torch
 import torch.utils.data as data
 
+
 class SRData(data.Dataset):
     def __init__(self, args, name='', train=True, benchmark=False):
         self.args = args
@@ -78,7 +79,7 @@ class SRData(data.Dataset):
                         b = b.replace(self.ext[1], '.pt')
                         self.images_lr[i].append(b)
                         self._check_and_load(
-                            args.ext, [l], b,  verbose=True, load=False
+                            args.ext, [l], b, verbose=True, load=False
                         )
 
         if train:
@@ -127,7 +128,8 @@ class SRData(data.Dataset):
         if os.path.isfile(f) and ext.find('reset') < 0:
             if load:
                 if verbose: print('Loading {}...'.format(f))
-                with open(f, 'rb') as _f: ret = pickle.load(_f)
+                with open(f, 'rb') as _f:
+                    ret = pickle.load(_f)
                 return ret
             else:
                 return None
@@ -141,7 +143,8 @@ class SRData(data.Dataset):
                 'name': os.path.splitext(os.path.basename(_l))[0],
                 'image': imageio.imread(_l)
             } for _l in l]
-            with open(f, 'wb') as _f: pickle.dump(b, _f)
+            with open(f, 'wb') as _f:
+                pickle.dump(b, _f)
             return b
 
     def __getitem__(self, idx):
@@ -181,8 +184,10 @@ class SRData(data.Dataset):
                 hr = imageio.imread(f_hr)
                 lr = imageio.imread(f_lr)
             elif self.args.ext.find('sep') >= 0:
-                with open(f_hr, 'rb') as _f: hr = np.load(_f)[0]['image']
-                with open(f_lr, 'rb') as _f: lr = np.load(_f)[0]['image']
+                with open(f_hr, 'rb') as _f:
+                    hr = np.load(_f)[0]['image']
+                with open(f_lr, 'rb') as _f:
+                    lr = np.load(_f)[0]['image']
 
         return lr, hr, filename
 
@@ -207,4 +212,3 @@ class SRData(data.Dataset):
 
     def set_scale(self, idx_scale):
         self.idx_scale = idx_scale
-

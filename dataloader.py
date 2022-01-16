@@ -12,12 +12,12 @@ from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.dataloader import _DataLoaderIter
 
 from torch.utils.data.dataloader import ExceptionWrapper
-# from torch.utils.data.dataloader import _use_shared_memory
+from torch.utils.data.dataloader import _use_shared_memory
 from torch.utils.data.dataloader import _worker_manager_loop
-# from torch.utils.data.dataloader import numpy_type_map
+from torch.utils.data.dataloader import numpy_type_map
 from torch.utils.data.dataloader import default_collate
-# from torch.utils.data.dataloader import pin_memory_batch
-# from torch.utils.data.dataloader import _SIGCHLD_handler_set
+from torch.utils.data.dataloader import pin_memory_batch
+from torch.utils.data.dataloader import _SIGCHLD_handler_set
 from torch.utils.data.dataloader import _set_SIGCHLD_handler
 
 if sys.version_info[0] == 2:

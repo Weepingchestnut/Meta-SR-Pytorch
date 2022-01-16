@@ -148,14 +148,16 @@ parser.add_argument('--save_results', action='store_true',
 args = parser.parse_args()
 template.set_template(args)
 
-#args.scale = list(map(lambda x: int(x), args.scale.split('+')))
+# args.scale = list(map(lambda x: int(x), args.scale.split('+')))
 ###here we redefine the scale
 
-if args.scale=='':
+if args.scale == '':
     import numpy as np
-    #args.scale = np.linspace(1.1,4,30)
-    args.scale = [1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0]
-    #print(args.scale)
+
+    # args.scale = np.linspace(1.1,4,30)
+    args.scale = [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0,
+                  3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0]
+    # print(args.scale)
 else:
     args.scale = list(map(lambda x: float(x), args.scale.split('+')))
 print(args.scale)
@@ -167,4 +169,3 @@ for arg in vars(args):
         vars(args)[arg] = True
     elif vars(args)[arg] == 'False':
         vars(args)[arg] = False
-

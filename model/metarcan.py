@@ -10,24 +10,24 @@ def make_model(args, parent=False):
     return RCAN(args)
 
 
-
 class Pos2Weight(nn.Module):
-    def __init__(self,inC, kernel_size=3, outC=3):
-        super(Pos2Weight,self).__init__()
+    def __init__(self, inC, kernel_size=3, outC=3):
+        super(Pos2Weight, self).__init__()
         self.inC = inC
-        self.kernel_size=kernel_size
+        self.kernel_size = kernel_size
         self.outC = outC
-        self.meta_block=nn.Sequential(
-            nn.Linear(3,256),
+        self.meta_block = nn.Sequential(
+            nn.Linear(3, 256),
             nn.ReLU(inplace=True),
-            nn.Linear(256,self.kernel_size*self.kernel_size*self.inC*self.outC)
+            nn.Linear(256, self.kernel_size * self.kernel_size * self.inC * self.outC)
         )
-    def forward(self,x):
 
+    def forward(self, x):
         output = self.meta_block(x)
         return output
 
-## Channel Attention (CA) Layer
+
+# Channel Attention (CA) Layer
 class CALayer(nn.Module):
     def __init__(self, channel, reduction=16):
         super(CALayer, self).__init__()
@@ -47,7 +47,7 @@ class CALayer(nn.Module):
         return x * y
 
 
-## Residual Channel Attention Block (RCAB)
+# Residual Channel Attention Block (RCAB)
 class RCAB(nn.Module):
     def __init__(
             self, conv, n_feat, kernel_size, reduction,
@@ -70,7 +70,7 @@ class RCAB(nn.Module):
         return res
 
 
-## Residual Group (RG)
+# Residual Group (RG)
 class ResidualGroup(nn.Module):
     def __init__(self, conv, n_feat, kernel_size, reduction, act, res_scale, n_resblocks):
         super(ResidualGroup, self).__init__()
@@ -88,7 +88,7 @@ class ResidualGroup(nn.Module):
         return res
 
 
-## Residual Channel Attention Network (RCAN)
+# Residual Channel Attention Network (RCAN)
 class RCAN(nn.Module):
     def __init__(self, args, conv=common.default_conv):
         super(RCAN, self).__init__()
@@ -147,27 +147,28 @@ class RCAN(nn.Module):
         res = self.body(x)
         res += x
 
-
-
-        local_weight = self.P2W(pos_mat.view(pos_mat.size(1),-1))   ###   (outH*outW, outC*inC*kernel_size*kernel_size)
-        up_x = self.repeat_x(res)     ### the output is (N*r*r,inC,inH,inW)
+        local_weight = self.P2W(pos_mat.view(pos_mat.size(1), -1))  # (outH*outW, outC*inC*kernel_size*kernel_size)
+        up_x = self.repeat_x(res)  # the output is (N*r*r,inC,inH,inW)
 
         # N*r^2 x [inC * kH * kW] x [inH * inW]
-        cols = nn.functional.unfold(up_x, 3,padding=1)
+        cols = nn.functional.unfold(up_x, 3, padding=1)
         scale_int = math.ceil(self.scale)
 
-        cols = cols.contiguous().view(cols.size(0)//(scale_int**2),scale_int**2, cols.size(1), cols.size(2), 1).permute(0,1, 3, 4, 2).contiguous()
+        cols = cols.contiguous().view(cols.size(0) // (scale_int ** 2), scale_int ** 2, cols.size(1), cols.size(2),
+                                      1).permute(0, 1, 3, 4, 2).contiguous()
 
-        local_weight = local_weight.contiguous().view(x.size(2),scale_int, x.size(3),scale_int,-1,3).permute(1,3,0,2,4,5).contiguous()
-        local_weight = local_weight.contiguous().view(scale_int**2, x.size(2)*x.size(3),-1, 3)
+        local_weight = local_weight.contiguous().view(x.size(2), scale_int, x.size(3), scale_int, -1, 3).permute(1, 3,
+                                                                                                                 0, 2,
+                                                                                                                 4,
+                                                                                                                 5).contiguous()
+        local_weight = local_weight.contiguous().view(scale_int ** 2, x.size(2) * x.size(3), -1, 3)
 
-        out = torch.matmul(cols,local_weight).permute(0,1,4,2,3)
-        out = out.contiguous().view(x.size(0),scale_int,scale_int,3,x.size(2),x.size(3)).permute(0,3,4,1,5,2)
-        out = out.contiguous().view(x.size(0),3, scale_int*x.size(2),scale_int*x.size(3))
+        out = torch.matmul(cols, local_weight).permute(0, 1, 4, 2, 3)
+        out = out.contiguous().view(x.size(0), scale_int, scale_int, 3, x.size(2), x.size(3)).permute(0, 3, 4, 1, 5, 2)
+        out = out.contiguous().view(x.size(0), 3, scale_int * x.size(2), scale_int * x.size(3))
         out = self.add_mean(out)
         ###
         return out
-
 
     def set_scale(self, scale_idx):
         self.scale_idx = scale_idx

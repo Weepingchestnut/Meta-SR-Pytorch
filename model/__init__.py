@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
+
 class Model(nn.Module):
     def __init__(self, args, ckp):
         super(Model, self).__init__()
@@ -51,7 +52,7 @@ class Model(nn.Module):
         elif self.chop and not self.training:
             return self.forward_chop(x)
         else:
-            return self.model(x,pos_mat)
+            return self.model(x, pos_mat)
 
     def get_model(self):
         if self.n_GPUs <= 1 or self.cpu:
@@ -188,4 +189,3 @@ class Model(nn.Module):
         output = output_cat.mean(dim=0, keepdim=True)
 
         return output
-

@@ -6,32 +6,33 @@ import skimage.color as sc
 import torch
 from torchvision import transforms
 
+
 def get_patch(*args, patch_size=96, scale=1, multi_scale=False):
     ih, iw = args[0].shape[:2]
 
     multi_scale = True
     if multi_scale:
-        tp = int(scale* patch_size)
+        tp = int(scale * patch_size)
         ip = patch_size
     else:
-        tp = int(scale* patch_size)
+        tp = int(scale * patch_size)
         ip = patch_size
 
-    #ix = random.randrange(0, iw - ip + 1)
-    #iy = random.randrange(0, ih - ip + 1)
-    #ix = random.randrange(0, (iw-ip)//(scale*10))*scale*10
-    #iy  = random.randrange(0, (ih-ip)//(scale*10))*scale*10
-    if scale==int(scale):
+    # ix = random.randrange(0, iw - ip + 1)
+    # iy = random.randrange(0, ih - ip + 1)
+    # ix = random.randrange(0, (iw-ip)//(scale*10))*scale*10
+    # iy  = random.randrange(0, (ih-ip)//(scale*10))*scale*10
+    if scale == int(scale):
         step = 1
-    elif (scale*2)== int(scale*2):
+    elif (scale * 2) == int(scale * 2):
         step = 2
-    elif (scale*5) == int(scale*5):
+    elif (scale * 5) == int(scale * 5):
         step = 5
     else:
         step = 10
 
-    ix = random.randrange(0, (iw-ip)//step)*step
-    iy = random.randrange(0, (ih-ip)//step) *step
+    ix = random.randrange(0, (iw - ip) // step) * step
+    iy = random.randrange(0, (ih - ip) // step) * step
 
     tx, ty = int(scale * ix), int(scale * iy)
 
@@ -41,6 +42,7 @@ def get_patch(*args, patch_size=96, scale=1, multi_scale=False):
     ]
 
     return ret
+
 
 def set_channel(*args, n_channels=3):
     def _set_channel(img):
@@ -57,6 +59,7 @@ def set_channel(*args, n_channels=3):
 
     return [_set_channel(a) for a in args]
 
+
 def np2Tensor(*args, rgb_range=255):
     def _np2Tensor(img):
         np_transpose = np.ascontiguousarray(img.transpose((2, 0, 1)))
@@ -66,6 +69,7 @@ def np2Tensor(*args, rgb_range=255):
         return tensor
 
     return [_np2Tensor(a) for a in args]
+
 
 def augment(*args, hflip=True, rot=True):
     hflip = hflip and random.random() < 0.5
@@ -80,4 +84,3 @@ def augment(*args, hflip=True, rot=True):
         return img
 
     return [_augment(a) for a in args]
-

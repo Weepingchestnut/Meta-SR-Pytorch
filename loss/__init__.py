@@ -2,6 +2,7 @@ import os
 from importlib import import_module
 
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -10,6 +11,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 
 class Loss(nn.modules.loss._Loss):
     def __init__(self, args, ckp):
@@ -37,7 +39,7 @@ class Loss(nn.modules.loss._Loss):
                     args,
                     loss_type
                 )
-           
+
             self.loss.append({
                 'type': loss_type,
                 'weight': float(weight),
@@ -140,4 +142,3 @@ class Loss(nn.modules.loss._Loss):
         for l in self.loss_module:
             if hasattr(l, 'scheduler'):
                 for _ in range(len(self.log)): l.scheduler.step()
-

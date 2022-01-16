@@ -80,9 +80,9 @@ class RDN(nn.Module):
             nn.Conv2d(G0, G0, kSize, padding=(kSize - 1) // 2, stride=1)
         ])
 
-        self.weight_conv =nn.Conv2d(G0+2,3,3,1,1)
+        self.weight_conv = nn.Conv2d(G0 + 2, 3, 3, 1, 1)
 
-    def forward(self, input ,scale=2):
+    def forward(self, input, scale=2):
         input_sub = self.sub_mean(input)
         f__1 = self.SFENet1(input_sub)
         x = self.SFENet2(f__1)
@@ -96,7 +96,7 @@ class RDN(nn.Module):
         x += f__1
 
         # Up-sampling net
-        up_x, up_input = upsampling(x,input_sub,scale)
+        up_x, up_input = upsampling(x, input_sub, scale)
         w_x = self.weight_conv(up_x)
 
         x = up_input + w_x
@@ -105,32 +105,29 @@ class RDN(nn.Module):
         return x
 
 
-def upsampling(x, input,scale=2):
-    ###here is our meta learning upsampling function
+def upsampling(x, input, scale=2):
+    # here is our meta learning upsampling function
     # the scale
     h, w = x.size()[2:]
     hr_h, hr_w = int(scale * h), int(scale * w)
 
+    pos_h = torch.arange(0, hr_h / scale, 1 / scale).repeat(hr_w)
+    pos_h = pos_h.view(1, 1, hr_w, hr_h).transpose(3, 2)
 
-    pos_h = torch.arange(0,hr_h/scale,1/scale).repeat(hr_w)
-    pos_h = pos_h.view(1,1,hr_w,hr_h).transpose(3,2)
+    pos_w = torch.arange(0, hr_w / scale, 1 / scale).repeat(hr_h)
+    pos_w = pos_w.view(1, 1, hr_h, hr_w)
 
-    pos_w = torch.arange(0,hr_w/scale, 1/scale).repeat(hr_h)
-    pos_w = pos_w.view(1,1,hr_h,hr_w)
-
-    pos = torch.cat((pos_h,pos_w),1)
+    pos = torch.cat((pos_h, pos_w), 1)
 
     int_pos = torch.floor(pos)
     res_pos = pos - int_pos
     res_pos = res_pos.cuda()
-    res_pos = res_pos.expand(x.size(0),res_pos.size(1),hr_h,hr_w)
+    res_pos = res_pos.expand(x.size(0), res_pos.size(1), hr_h, hr_w)
 
-    up_x = nn.functional.upsample(x,[hr_h,hr_w], mode='bilinear')
-    up_input = nn.functional.upsample(input,[hr_h,hr_w], mode='bilinear')
-    #print(up_x.size())
-    #print(res_pos.size())
-    pos_x = torch.cat((up_x,res_pos),1)
+    up_x = nn.functional.upsample(x, [hr_h, hr_w], mode='bilinear')
+    up_input = nn.functional.upsample(input, [hr_h, hr_w], mode='bilinear')
+    # print(up_x.size())
+    # print(res_pos.size())
+    pos_x = torch.cat((up_x, res_pos), 1)
 
-    return pos_x,up_input
-
-
+    return pos_x, up_input
