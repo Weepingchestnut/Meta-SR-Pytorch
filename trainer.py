@@ -9,7 +9,7 @@ from torch.autograd import Variable
 from tqdm import tqdm
 
 
-class Trainer():
+class Trainer:
     def __init__(self, args, loader, my_model, my_loss, ckp):
         self.args = args
         self.scale = args.scale
@@ -30,18 +30,21 @@ class Trainer():
 
         self.error_last = 1e8
 
-    ######by given the scale and the size of input image
-    ######we caculate the input matrix for the weight prediction network
-    ###### input matrix for weight prediction network
+    """
+        by given the scale and the size of input image,
+        we caculate the input matrix for the weight prediction network input matrix for weight prediction network
+        （在给定输入图像的尺度和大小的情况下，计算出权重预测网络的输入矩阵）
+    """
     def input_matrix_wpn(self, inH, inW, scale, add_scale=True):
-        '''
+        """
         inH, inW: the size of the feature maps
         scale: is the upsampling times
-        '''
+        """
         outH, outW = int(scale * inH), int(scale * inW)
 
-        #### mask records which pixel is invalid, 1 valid or o invalid
-        #### h_offset and w_offset caculate the offset to generate the input matrix
+        # mask records which pixel is invalid, 1 valid or o invalid,
+        # h_offset and w_offset caculate the offset to generate the input matrix
+        # （mask 记录哪些像素无效，1有效 or 0无效，h_offset 和 w_offset 计算偏移量生成输入矩阵）
         scale_int = int(math.ceil(scale))
         h_offset = torch.ones(inH, scale_int, 1)
         mask_h = torch.zeros(inH, scale_int, 1)
@@ -53,9 +56,10 @@ class Trainer():
             # res_scale = scale_int - scale
             # scale_mat[0,scale_int-1]=1-res_scale
             # scale_mat[0,scale_int-2]= res_scale
-            scale_mat = torch.cat([scale_mat] * (inH * inW * (scale_int ** 2)), 0)  ###(inH*inW*scale_int**2, 4)
+            scale_mat = torch.cat([scale_mat] * (inH * inW * (scale_int ** 2)), 0)  # (inH*inW*scale_int**2, 4)
 
-        ####projection  coordinate  and caculate the offset 
+        # projection coordinate  and caculate the offset
+        # （投影坐标和计算偏移量）
         h_project_coord = torch.arange(0, outH, 1).float().mul(1.0 / scale)
         int_h_project_coord = torch.floor(h_project_coord)
 
@@ -68,7 +72,8 @@ class Trainer():
         offset_w_coord = w_project_coord - int_w_project_coord
         int_w_project_coord = int_w_project_coord.int()
 
-        ####flag for   number for current coordinate LR image
+        # flag for number for current coordinate LR image
+        # （标记当前LR图像坐标的编号）
         flag = 0
         number = 0
         for i in range(outH):
@@ -95,10 +100,10 @@ class Trainer():
                 number += 1
                 flag = 1
 
-        ## the size is scale_int* inH* (scal_int*inW)
+        # the size is scale_int * inH * (scal_int * inW)
         h_offset_coord = torch.cat([h_offset] * (scale_int * inW), 2).view(-1, scale_int * inW, 1)
         w_offset_coord = torch.cat([w_offset] * (scale_int * inH), 0).view(-1, scale_int * inW, 1)
-        ####
+        #
         mask_h = torch.cat([mask_h] * (scale_int * inW), 2).view(-1, scale_int * inW, 1)
         mask_w = torch.cat([mask_w] * (scale_int * inH), 0).view(-1, scale_int * inW, 1)
 
@@ -109,7 +114,7 @@ class Trainer():
         if add_scale:
             pos_mat = torch.cat((scale_mat.view(1, -1, 1), pos_mat), 2)
 
-        return pos_mat, mask_mat  ##outH*outW*2 outH=scale_int*inH , outW = scale_int *inW
+        return pos_mat, mask_mat  # outH*outW*2 outH=scale_int*inH , outW = scale_int *inW
 
     def train(self):
         self.scheduler.step()
@@ -261,7 +266,8 @@ class Trainer():
         device = torch.device('cpu' if self.args.cpu else 'cuda')
 
         def _prepare(tensor):
-            if self.args.precision == 'half': tensor = tensor.half()
+            if self.args.precision == 'half':
+                tensor = tensor.half()
             return tensor.to(device)
 
         return [_prepare(a) for a in args]
