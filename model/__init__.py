@@ -23,7 +23,8 @@ class Model(nn.Module):
 
         module = import_module('model.' + args.model.lower())
         self.model = module.make_model(args).to(self.device)
-        if args.precision == 'half': self.model.half()
+        if args.precision == 'half':
+            self.model.half()
 
         if not args.cpu and args.n_GPUs > 1:
             self.model = nn.DataParallel(self.model, range(args.n_GPUs))
@@ -34,7 +35,7 @@ class Model(nn.Module):
             resume=args.resume,
             cpu=args.cpu
         )
-        print(self.model, file=ckp.log_file)
+        print(self.model, file=ckp.log_file)    # Why no print?
 
     def forward(self, x, idx_scale, pos_mat):
         self.idx_scale = idx_scale

@@ -26,7 +26,8 @@ class Trainer:
             self.optimizer.load_state_dict(
                 torch.load(os.path.join(ckp.dir, 'optimizer.pt'))
             )
-            for _ in range(len(ckp.log)): self.scheduler.step()
+            for _ in range(len(ckp.log)):
+                self.scheduler.step()
 
         self.error_last = 1e8
 
@@ -43,8 +44,8 @@ class Trainer:
         outH, outW = int(scale * inH), int(scale * inW)
 
         # mask records which pixel is invalid, 1 valid or o invalid,
-        # h_offset and w_offset caculate the offset to generate the input matrix
-        # （mask 记录哪些像素无效，1有效 or 0无效，h_offset 和 w_offset 计算偏移量生成输入矩阵）
+        # h_offset and w_offset calculate the offset to generate the input matrix
+        # （mask 记录哪些像素无效，1有效 or 0无效，h_offset 和 w_offset 计算偏移量以生成输入矩阵）
         scale_int = int(math.ceil(scale))
         h_offset = torch.ones(inH, scale_int, 1)
         mask_h = torch.zeros(inH, scale_int, 1)
@@ -58,7 +59,7 @@ class Trainer:
             # scale_mat[0,scale_int-2]= res_scale
             scale_mat = torch.cat([scale_mat] * (inH * inW * (scale_int ** 2)), 0)  # (inH*inW*scale_int**2, 4)
 
-        # projection coordinate  and caculate the offset
+        # projection coordinate and calculate the offset
         # （投影坐标和计算偏移量）
         h_project_coord = torch.arange(0, outH, 1).float().mul(1.0 / scale)
         int_h_project_coord = torch.floor(h_project_coord)
@@ -138,7 +139,7 @@ class Trainer:
             N, C, H, W = lr.size()
             _, _, outH, outW = hr.size()
             scale_coord_map, mask = self.input_matrix_wpn(H, W, self.args.scale[
-                idx_scale])  ###  get the position matrix, mask
+                idx_scale])  # get the position matrix, mask
 
             if self.args.n_GPUs > 1 and not self.args.cpu:
                 scale_coord_map = torch.cat([scale_coord_map] * self.args.n_GPUs, 0)
@@ -183,7 +184,7 @@ class Trainer:
             target.state_dict(),
             os.path.join(self.ckp.dir, 'model', 'model_{}.pt'.format(epoch))
         )
-        ## save models
+        # save models
 
     def test(self):
         epoch = self.scheduler.last_epoch + 1

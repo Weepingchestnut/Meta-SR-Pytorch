@@ -64,6 +64,7 @@ parser.add_argument('--shift_mean', default=True,
                     help='subtract pixel mean from the input')
 parser.add_argument('--dilation', action='store_true',
                     help='use dilated convolution')
+# 测试精度（FP32 or FP64）
 parser.add_argument('--precision', type=str, default='single',
                     choices=('single', 'half'),
                     help='FP precision for test (single | half)')
@@ -84,7 +85,7 @@ parser.add_argument('--reduction', type=int, default=16,
 
 # Training specifications
 parser.add_argument('--reset', action='store_true',
-                    help='reset the training')
+                    help='reset the training')      # rm -rf './experiment/metardn_mytest'
 parser.add_argument('--test_every', type=int, default=1000,
                     help='do test per every N batches')
 parser.add_argument('--epochs', type=int, default=1000,
@@ -149,7 +150,7 @@ args = parser.parse_args()
 template.set_template(args)
 
 # args.scale = list(map(lambda x: int(x), args.scale.split('+')))
-###here we redefine the scale
+# here we redefine the scale
 
 if args.scale == '':
     import numpy as np

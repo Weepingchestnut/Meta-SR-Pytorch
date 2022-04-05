@@ -99,7 +99,7 @@ class MetaRDN(nn.Module):
             nn.Conv2d(G0, G0, kSize, padding=(kSize - 1) // 2, stride=1)
         ])
 
-        ## position to weight
+        # position to weight
         self.P2W = Pos2Weight(inC=G0)
 
     def repeat_x(self, x):
@@ -125,9 +125,9 @@ class MetaRDN(nn.Module):
 
         x = self.GFF(torch.cat(RDBs_out, 1))
         x += f__1
-        local_weight = self.P2W(pos_mat.view(pos_mat.size(1), -1))  ###   (outH*outW, outC*inC*kernel_size*kernel_size)
+        local_weight = self.P2W(pos_mat.view(pos_mat.size(1), -1))  # (outH*outW, outC*inC*kernel_size*kernel_size)
         # print(d2)
-        up_x = self.repeat_x(x)  ### the output is (N*r*r,inC,inH,inW)
+        up_x = self.repeat_x(x)  # the output is (N*r*r,inC,inH,inW)
 
         cols = nn.functional.unfold(up_x, 3, padding=1)
         scale_int = math.ceil(self.scale)

@@ -10,7 +10,7 @@ class Data:
         if not args.test_only:
             module_train = import_module('data.' + args.data_train.lower())  # load the right dataset loader module
             trainset = getattr(module_train, args.data_train)(
-                args)  # load the dataset, args.data_train is the  dataset name
+                args)  # load the dataset, args.data_train is the dataset name
             self.loader_train = MSDataLoader(
                 args,
                 trainset,

@@ -60,13 +60,15 @@ class Loss(nn.modules.loss._Loss):
 
         device = torch.device('cpu' if args.cpu else 'cuda')
         self.loss_module.to(device)
-        if args.precision == 'half': self.loss_module.half()
+        if args.precision == 'half':
+            self.loss_module.half()
         if not args.cpu and args.n_GPUs > 1:
             self.loss_module = nn.DataParallel(
                 self.loss_module, range(args.n_GPUs)
             )
 
-        if args.load != '.': self.load(ckp.dir, cpu=args.cpu)
+        if args.load != '.':
+            self.load(ckp.dir, cpu=args.cpu)
 
     def forward(self, sr, hr):
         losses = []
@@ -141,4 +143,5 @@ class Loss(nn.modules.loss._Loss):
         self.log = torch.load(os.path.join(apath, 'loss_log.pt'))
         for l in self.loss_module:
             if hasattr(l, 'scheduler'):
-                for _ in range(len(self.log)): l.scheduler.step()
+                for _ in range(len(self.log)):
+                    l.scheduler.step()

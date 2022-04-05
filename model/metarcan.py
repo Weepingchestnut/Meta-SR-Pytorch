@@ -1,5 +1,5 @@
-## ECCV-2018-Image Super-Resolution Using Very Deep Residual Channel Attention Networks
-## https://arxiv.org/abs/1807.02758
+# ECCV-2018-Image Super-Resolution Using Very Deep Residual Channel Attention Networks
+# https://arxiv.org/abs/1807.02758
 from model import common
 import torch
 import math
@@ -127,7 +127,7 @@ class RCAN(nn.Module):
         self.head = nn.Sequential(*modules_head)
         self.body = nn.Sequential(*modules_body)
 
-        ## position to weight
+        # position to weight
         self.P2W = Pos2Weight(inC=n_feats)
 
     def repeat_x(self, x):

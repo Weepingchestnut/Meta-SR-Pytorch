@@ -4,7 +4,7 @@ import numpy as np
 import skimage.color as sc
 
 import torch
-from torchvision import transforms
+# from torchvision import transforms
 
 
 def get_patch(*args, patch_size=96, scale=1, multi_scale=False):
@@ -77,9 +77,12 @@ def augment(*args, hflip=True, rot=True):
     rot90 = rot and random.random() < 0.5
 
     def _augment(img):
-        if hflip: img = img[:, ::-1, :]
-        if vflip: img = img[::-1, :, :]
-        if rot90: img = img.transpose(1, 0, 2)
+        if hflip:
+            img = img[:, ::-1, :]
+        if vflip:
+            img = img[::-1, :, :]
+        if rot90:
+            img = img.transpose(1, 0, 2)
 
         return img
 

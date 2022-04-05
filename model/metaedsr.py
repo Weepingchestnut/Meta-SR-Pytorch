@@ -61,7 +61,7 @@ class EDSR(nn.Module):
         self.head = nn.Sequential(*m_head)
         self.body = nn.Sequential(*m_body)
 
-        ## position to weight
+        # position to weight
 
         self.P2W = Pos2Weight(inC=args.n_feats)
 

@@ -133,11 +133,17 @@ class MSDataLoader(DataLoader):
             collate_fn=default_collate, pin_memory=False, drop_last=False,
             timeout=0, worker_init_fn=None):
         super(MSDataLoader, self).__init__(
-            dataset, batch_size=batch_size, shuffle=shuffle,
-            sampler=sampler, batch_sampler=batch_sampler,
-            num_workers=args.n_threads, collate_fn=collate_fn,
-            pin_memory=pin_memory, drop_last=drop_last,
-            timeout=timeout, worker_init_fn=worker_init_fn)
+            dataset,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            sampler=sampler,
+            batch_sampler=batch_sampler,
+            num_workers=args.n_threads,
+            collate_fn=collate_fn,
+            pin_memory=pin_memory,
+            drop_last=drop_last,
+            timeout=timeout,
+            worker_init_fn=worker_init_fn)
 
         self.scale = args.scale
 

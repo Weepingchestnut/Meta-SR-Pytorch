@@ -41,7 +41,7 @@ class timer():
         self.acc = 0
 
 
-class checkpoint():
+class checkpoint:
     def __init__(self, args):
         self.args = args
         self.ok = True
@@ -49,7 +49,8 @@ class checkpoint():
         now = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
 
         if args.load == '.':
-            if args.save == '.': args.save = now
+            if args.save == '.':
+                args.save = now
             self.dir = './experiment/' + args.save
         else:
             self.dir = './experiment/' + args.load
@@ -64,7 +65,8 @@ class checkpoint():
             args.load = '.'
 
         def _make_dir(path):
-            if not os.path.exists(path): os.makedirs(path)
+            if not os.path.exists(path):
+                os.makedirs(path)
 
         _make_dir(self.dir)
         _make_dir(self.dir + '/model')
@@ -160,10 +162,10 @@ def calc_psnr(sr, hr, scale, rgb_range, benchmark=False):
 
 
 def calc_ssim(img1, img2, scale=2, benchmark=False):
-    '''calculate SSIM
+    """calculate SSIM
     the same outputs as MATLAB's
     img1, img2: [0, 255]
-    '''
+    """
     if benchmark:
         border = math.ceil(scale)
     else:
